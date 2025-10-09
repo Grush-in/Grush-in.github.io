@@ -482,10 +482,11 @@
       .tabs{ gap:3px }
       
       /* Hero section */
-      .hero-main{ display:block }
-      .hero-content{ order: initial }
-      .avatar{ order: initial; min-height:400px; position:sticky; top:80px; z-index:1; width:100%; margin-bottom:20px; float:none }
-      .hero-content{ margin-top:0 }
+      .hero-main{ display:flex; flex-direction:column }
+      .hero-header{ order: 1 }
+      .avatar{ order: 2; min-height:400px; position:sticky; top:80px; z-index:1; width:100%; margin:20px 0 }
+      .scroll-section{ order: 3 }
+      .hero-content{ display:flex; flex-direction:column }
       .hero-grid{ grid-template-columns: 1fr }
       .hero-title{ font-size:44px }
       .hero-subtitle{ font-size:20px }
@@ -532,9 +533,11 @@
       
       /* Hero */
       .hero{ margin-top:16px; gap:20px }
-      .hero-main{ display:block }
-      .hero-content{ order: initial }
-      .avatar{ order: initial; min-height:350px; margin-bottom:20px; position:sticky; top:70px; z-index:1; width:100% }
+      .hero-main{ display:flex; flex-direction:column }
+      .hero-header{ order: 1 }
+      .avatar{ order: 2; min-height:350px; position:sticky; top:70px; z-index:1; width:100%; margin:20px 0 }
+      .scroll-section{ order: 3 }
+      .hero-content{ display:flex; flex-direction:column }
       .hero-title{ font-size:36px }
       .hero-subtitle{ font-size:18px }
       .section-title-main{ font-size:22px }
@@ -581,10 +584,11 @@
       
       /* Hero */
       .hero{ gap:16px; margin-top:12px }
-      .hero-main{ display:block }
-      .hero-content{ order: initial }
-      .avatar{ order: initial; min-height:300px; margin-bottom:16px; position:sticky; top:60px; z-index:1; width:100% }
-      .hero-header{ padding:0 0 12px 0 }
+      .hero-main{ display:flex; flex-direction:column }
+      .hero-header{ order: 1; padding:0 0 12px 0 }
+      .avatar{ order: 2; min-height:300px; position:sticky; top:60px; z-index:1; width:100%; margin:16px 0 }
+      .scroll-section{ order: 3 }
+      .hero-content{ display:flex; flex-direction:column }
       .hero-title{ font-size:28px; line-height:1.2 }
       .hero-subtitle{ font-size:16px }
       .section-title-main{ font-size:20px }
@@ -644,9 +648,11 @@
       
       /* Hero */
       .hero{ gap:12px }
-      .hero-main{ display:block }
-      .hero-content{ order: initial }
-      .avatar{ order: initial; min-height:250px; margin-bottom:12px; position:sticky; top:50px; z-index:1; width:100% }
+      .hero-main{ display:flex; flex-direction:column }
+      .hero-header{ order: 1 }
+      .avatar{ order: 2; min-height:250px; position:sticky; top:50px; z-index:1; width:100%; margin:12px 0 }
+      .scroll-section{ order: 3 }
+      .hero-content{ display:flex; flex-direction:column }
       .hero-title{ font-size:24px }
       .hero-subtitle{ font-size:14px }
       .section-title-main{ font-size:18px }
