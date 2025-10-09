@@ -74,6 +74,20 @@
     .avatar{
       position:relative; height:100%; min-height:500px; background:url('images/me.png') center/cover no-repeat;
     }
+    .avatar::before{
+      content:""; position:absolute; inset:-3px; z-index:-1; border-radius:var(--radius);
+      background:linear-gradient(45deg, var(--primary), var(--primary-2), #ff10f0, var(--primary-2), var(--primary));
+      background-size:300% 300%;
+      animation:neon-border 4s ease infinite, neon-glow 2s ease-in-out infinite;
+    }
+    @keyframes neon-border{
+      0%, 100%{ background-position:0% 50% }
+      50%{ background-position:100% 50% }
+    }
+    @keyframes neon-glow{
+      0%, 100%{ box-shadow:0 0 20px rgba(168,85,247,.6), 0 0 40px rgba(59,183,255,.4), 0 0 60px rgba(168,85,247,.2) }
+      50%{ box-shadow:0 0 30px rgba(168,85,247,.8), 0 0 60px rgba(59,183,255,.6), 0 0 90px rgba(168,85,247,.4) }
+    }
 
     /* ---------- Sections ---------- */
     section{margin-top:28px}
