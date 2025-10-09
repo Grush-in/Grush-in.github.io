@@ -506,24 +506,26 @@
 
     /* ---------- Placeholder SVG line chart ---------- */
     const chart = document.getElementById('chart');
-    const w = chart.clientWidth, h = chart.clientHeight;
-    const svgNS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('width', w); svg.setAttribute('height', h);
-    const path = document.createElementNS(svgNS, 'path');
-    const pts = Array.from({length:18}, (_,i)=>({x: i/(18-1)*w, y: h*0.6 - Math.sin(i*0.6 + 1.2)*h*0.25 - (i%5?0:14)}));
-    const d = 'M'+pts.map((p,i)=> (i? 'L':'') + p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
-    path.setAttribute('d', d);
-    path.setAttribute('fill','none');
-    path.setAttribute('stroke','url(#g)');
-    path.setAttribute('stroke-width','2');
-    const defs = document.createElementNS(svgNS,'defs');
-    const grad = document.createElementNS(svgNS,'linearGradient');
-    grad.id='g'; grad.setAttribute('x1','0%'); grad.setAttribute('x2','100%'); grad.setAttribute('y1','0%'); grad.setAttribute('y2','0%');
-    const s1=document.createElementNS(svgNS,'stop'); s1.setAttribute('offset','0%'); s1.setAttribute('stop-color','var(--primary)');
-    const s2=document.createElementNS(svgNS,'stop'); s2.setAttribute('offset','100%'); s2.setAttribute('stop-color','var(--primary-2)');
-    grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad);
-    svg.appendChild(defs); svg.appendChild(path); chart.appendChild(svg);
+    if(chart){
+      const w = chart.clientWidth, h = chart.clientHeight;
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('width', w); svg.setAttribute('height', h);
+      const path = document.createElementNS(svgNS, 'path');
+      const pts = Array.from({length:18}, (_,i)=>({x: i/(18-1)*w, y: h*0.6 - Math.sin(i*0.6 + 1.2)*h*0.25 - (i%5?0:14)}));
+      const d = 'M'+pts.map((p,i)=> (i? 'L':'') + p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+      path.setAttribute('d', d);
+      path.setAttribute('fill','none');
+      path.setAttribute('stroke','url(#g)');
+      path.setAttribute('stroke-width','2');
+      const defs = document.createElementNS(svgNS,'defs');
+      const grad = document.createElementNS(svgNS,'linearGradient');
+      grad.id='g'; grad.setAttribute('x1','0%'); grad.setAttribute('x2','100%'); grad.setAttribute('y1','0%'); grad.setAttribute('y2','0%');
+      const s1=document.createElementNS(svgNS,'stop'); s1.setAttribute('offset','0%'); s1.setAttribute('stop-color','var(--primary)');
+      const s2=document.createElementNS(svgNS,'stop'); s2.setAttribute('offset','100%'); s2.setAttribute('stop-color','var(--primary-2)');
+      grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad);
+      svg.appendChild(defs); svg.appendChild(path); chart.appendChild(svg);
+    }
 
     /* ---------- Chat Assistant (rule-based demo) ---------- */
     const fab = document.getElementById('chatFab');
@@ -573,13 +575,28 @@
         term.textContent += lines[i] + '\n';
         i++; p += Math.floor(100/lines.length);
         bar.style.width = Math.min(p, 100) + '%';
-        setTimeout(write, 260);
+        setTimeout(write, 80);
       } else {
         bar.style.width = '100%';
-        setTimeout(()=>{ boot.style.opacity='1'; boot.style.transition='opacity .6s ease'; boot.style.opacity='0'; setTimeout(()=>boot.remove(), 600); }, 380);
+        setTimeout(()=>{ boot.style.opacity='1'; boot.style.transition='opacity .3s ease'; boot.style.opacity='0'; setTimeout(()=>boot.remove(), 300); }, 100);
       }
     };
-    window.addEventListener('load', write);
+    
+    // Запуск анимации
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', write);
+    } else {
+      write();
+    }
+    
+    // Защита от зависания - принудительное скрытие через 3 секунды
+    setTimeout(()=>{
+      if(boot && boot.parentElement){
+        boot.style.transition='opacity .3s ease';
+        boot.style.opacity='0';
+        setTimeout(()=>boot.remove(), 300);
+      }
+    }, 3000);
   </script>
 </body>
 </html>
