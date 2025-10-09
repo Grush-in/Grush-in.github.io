@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NEON//CODE — Portfolio</title>
+  <title>Grush-in//project — Portfolio</title>
   <style>
     /* ---------- Fonts ---------- */
     @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400; src: local('Inter'), local('Inter-Regular'); }
@@ -74,8 +74,8 @@
     /* ---------- Sections ---------- */
     section{margin-top:28px}
     .cards{ display:grid; grid-template-columns: repeat(3, 1fr); gap:18px }
-    .card{ background:var(--glass); border:1px solid rgba(255,255,255,.08); border-radius:16px; overflow:hidden; position:relative}
-    .card:hover{ box-shadow:0 14px 36px rgba(168,85,247,.12) }
+    .card{ background:var(--glass); border:1px solid rgba(255,255,255,.08); border-radius:16px; overflow:hidden; position:relative; cursor:pointer; text-decoration:none; display:block; color:var(--text); transition:all .3s ease}
+    .card:hover{ box-shadow:0 14px 36px rgba(168,85,247,.12); transform:translateY(-4px); border-color:rgba(168,85,247,.3) }
     .card .thumb{ height:160px; background:linear-gradient(120deg, rgba(168,85,247,.25), rgba(59,183,255,.2));}
     .card .content{ padding:14px 16px }
     .pill{ font-size:12px; padding:4px 8px; border:1px solid rgba(255,255,255,.14); border-radius:999px; margin-right:8px; color:var(--muted)}
@@ -127,7 +127,7 @@
 
     /* ---------- System Boot Overlay ---------- */
     .boot{ position:fixed; inset:0; background:#04050a; z-index:100; display:flex; align-items:center; justify-content:center; color:#cfd8ff; flex-direction:column; gap:16px }
-    .boot .terminal{ width:min(760px, 92vw); height:min(360px, 60vh); background:#0a0c12; border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:16px; box-shadow:0 0 40px rgba(59,183,255,.15) inset; font-family:monospace; overflow:hidden }
+    .boot .terminal{ width:min(760px, 92vw); height:min(360px, 60vh); background:#0a0c12; border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:16px; box-shadow:0 0 40px rgba(59,183,255,.15) inset; font-family:monospace; overflow:hidden; white-space:pre-wrap }
     .boot .blink{ animation:blink 1s step-end infinite }
     @keyframes blink{ 50%{opacity:0} }
     .progress{ width:62%; height:8px; background:#141823; border-radius:999px; overflow:hidden; border:1px solid rgba(255,255,255,.12) }
@@ -149,13 +149,13 @@
   <div class="boot" id="boot">
     <div class="terminal" id="term"></div>
     <div class="progress"><span id="bar"></span></div>
-    <div>Launching NEON//CODE<span class="blink">_</span></div>
+    <div>Launching Grush-in//project<span class="blink">_</span></div>
   </div>
 
   <!-- Header / Nav -->
   <header>
     <div class="container nav">
-      <div class="logo"><span class="logo-mark"></span>NEON//CODE</div>
+      <div class="logo"><span class="logo-mark"></span>Grush-in//project</div>
       <div class="spacer"></div>
       <div class="tabs">
         <button class="tab-btn active" data-tab="about">Обо мне</button>
@@ -240,7 +240,7 @@
   <button class="chat-fab" id="chatFab">✦</button>
   <div class="chat" id="chatBox" aria-live="polite">
     <header>
-      <div class="chat-title">NEON//AI — портфолио‑помощник</div>
+      <div class="chat-title">Grush-in//AI — портфолио‑помощник</div>
     </header>
     <div class="chat-suggestions" id="chatSugg">
       <span class="chip" data-q="Расскажи о тебе">Расскажи о тебе</span>
@@ -311,19 +311,18 @@
         function render(items, lang){
           grid.innerHTML='';
           items.filter(r=> lang==='all' || r.language===lang).forEach(r=>{
-            const site = r.homepage && r.homepage.startsWith('http') ? `<a class="cta" href="${r.homepage}" target="_blank" rel="noreferrer">Демо</a>` : '';
             const desc = r.description ? r.description : 'Описание не добавлено';
+            const url = r.homepage && r.homepage.startsWith('http') ? r.homepage : r.html_url;
+            const badge = r.homepage && r.homepage.startsWith('http') ? '<span class="pill">🌐 Демо</span>' : '';
             grid.insertAdjacentHTML('beforeend', `
-              <article class="card">
+              <a class="card" href="${url}" target="_blank" rel="noreferrer">
                 <div class="thumb" style="background-image:linear-gradient(120deg, rgba(168,85,247,.12), rgba(59,183,255,.12)); background-size:cover"></div>
                 <div class="content">
-                  <div><span class="pill">${r.language || 'Misc'}</span><span class="pill">★ ${r.stargazers_count}</span></div>
+                  <div><span class="pill">${r.language || 'Misc'}</span><span class="pill">★ ${r.stargazers_count}</span>${badge}</div>
                   <h3>${r.name}</h3>
                   <p class="subtitle">${desc}</p>
-                  <a class="cta" href="${r.html_url}" target="_blank" rel="noreferrer">Репозиторий</a>
-                  ${site}
                 </div>
-              </article>
+              </a>
             `);
           });
         }
@@ -385,7 +384,7 @@
 
     const lines = [
       '[BOOT] Initializing core modules... OK',
-      '[BOOT] Loading UI skin: NEON//CODE',
+      '[BOOT] Loading UI skin: Grush-in//project',
       '[NET ] Checking endpoints: api/v1 • ws... OK',
       '[DB  ] Connecting: redis://cache • postgres://db... OK',
       '[AUTH] Tokens: refreshed',
