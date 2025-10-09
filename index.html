@@ -24,7 +24,7 @@
       --shadow:0 10px 30px rgba(0,0,0,.45);
       --radius:18px;
     }
-
+    Dart
     /* ---------- Base ---------- */
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -57,19 +57,18 @@
     .tab-btn.active, .tab-btn:hover{ background:linear-gradient(180deg, rgba(168,85,247,.18), rgba(255,255,255,.06)); box-shadow:0 0 0 1px rgba(168,85,247,.3), 0 6px 18px rgba(168,85,247,.18)}
 
     /* ---------- Hero ---------- */
-    .hero{ display:grid; grid-template-columns: 1.2fr .8fr; gap:28px; align-items:stretch; margin-top:26px}
+    .hero{ display:grid; grid-template-columns: 1fr; gap:18px; margin-top:26px}
+    .hero-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap:18px }
     .panel{ background:var(--panel); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
-    .panel.inner{ padding:26px }
-    .title{ font-size:38px; line-height:1.15; margin:0 0 10px 0; font-weight:700 }
-    .subtitle{ color:var(--muted); margin:0 0 22px 0 }
-    .badges{display:flex; gap:10px; flex-wrap:wrap}
+    .panel.inner{ padding:22px }
+    .panel.full{ grid-column: 1 / -1 }
+    .title{ font-size:32px; line-height:1.2; margin:0 0 10px 0; font-weight:700 }
+    .subtitle{ color:var(--muted); margin:0 0 14px 0 }
+    .badges{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
     .badge{ background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.1); padding:8px 12px; border-radius:999px; display:inline-flex; align-items:center; gap:8px; font-size:13px}
     .badge::before{ content:""; width:6px; height:6px; border-radius:3px; background:var(--primary); box-shadow:0 0 10px rgba(168,85,247,.9)}
-
-    .avatar{
-      position:relative; height:100%; background:radial-gradient(600px 300px at 30% 0%, rgba(168,85,247,.25), transparent 50%), url('https://images.unsplash.com/photo-1503342217505-b0a15cf70489?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;
-    }
-    .avatar::after{content:""; position:absolute; inset:0; background:linear-gradient(45deg, rgba(59,183,255,.25), rgba(168,85,247,.15)); mix-blend:screen}
+    .section-title{ font-size:18px; font-weight:600; margin:0 0 12px 0; color:var(--text) }
+    .text-block{ line-height:1.6; color:var(--muted); margin:8px 0 }
 
     /* ---------- Sections ---------- */
     section{margin-top:28px}
@@ -135,12 +134,14 @@
 
     /* ---------- Responsive ---------- */
     @media (max-width: 940px){
-      .hero{ grid-template-columns: 1fr; }
+      .hero-grid{ grid-template-columns: 1fr }
       .cards{ grid-template-columns: 1fr 1fr }
       .grid-2{ grid-template-columns: 1fr }
+      .title{ font-size:26px }
     }
     @media (max-width: 640px){
       .cards{ grid-template-columns: 1fr }
+      .title{ font-size:22px }
     }
   </style>
 </head>
@@ -169,22 +170,51 @@
   <main class="container">
     <!-- Hero -->
     <div class="hero" id="about">
-      <div class="panel inner">
-        <h1 class="title">Привет! Я Кирилл — разработчик, который любит собирать сервисы и AI‑инструменты.</h1>
-        <p class="subtitle">Python • Dart/Flutter • Image Processing • Bots • FastAPI</p>
+      <!-- Заголовок -->
+      <div class="panel inner full">
+        <h1 class="title">Привет! Я Кирилл — разработчик, который любит собирать сервисы, приложения и изучать AI-инструменты.</h1>
         <div class="badges">
           <span class="badge">Python</span>
           <span class="badge">Dart</span>
           <span class="badge">Flutter</span>
-          <span class="badge">OpenCV</span>
           <span class="badge">FastAPI</span>
+          <span class="badge">OpenCV</span>
+          <span class="badge">PostgreSQL</span>
         </div>
-        <section>
-          <h3>Что я делаю</h3>
-          <p>Делаю лёгкие в использовании инструменты, ботов и аналитические панели. Люблю аккуратный код, понятную архитектуру и небольшие детали UX.</p>
-        </section>
       </div>
-      <div class="panel avatar" aria-label="avatar"></div>
+
+      <!-- Сетка из 4 карточек -->
+      <div class="hero-grid">
+        <!-- Мои hard skills -->
+        <div class="panel inner">
+          <h3 class="section-title">💼 Мои hard skills</h3>
+          <p class="text-block"><strong>Языки и фреймворки:</strong> Python, Dart, Flutter, FastAPI</p>
+          <p class="text-block"><strong>Data & AI:</strong> Pandas, OpenCV, MicroPython</p>
+          <p class="text-block"><strong>Базы данных:</strong> PostgreSQL</p>
+          <p class="text-block"><strong>Инженерия:</strong> CAD-системы (Компас-3D, Fusion 360)</p>
+        </div>
+
+        <!-- Образование -->
+        <div class="panel inner">
+          <h3 class="section-title">🎓 Образование</h3>
+          <p class="text-block"><strong>Томский Государственный Университет</strong> — направление «Мехатроника и робототехника»</p>
+          <p class="text-block"><strong>Дополнительная квалификация</strong> — Аналитик данных</p>
+          <p class="text-block">Комбинирую инженерное мышление с подходами анализа данных и автоматизации процессов.</p>
+        </div>
+
+        <!-- Чем занимаюсь -->
+        <div class="panel inner">
+          <h3 class="section-title">🚀 Чем занимаюсь</h3>
+          <p class="text-block">Разрабатываю мобильные приложения на Android/iOS, создаю ботов и веб-сервисы с API, строю аналитические панели и автоматизирую задачи с помощью Python.</p>
+        </div>
+
+        <!-- Что мне интересно -->
+        <div class="panel inner">
+          <h3 class="section-title">✨ Что мне интересно</h3>
+          <p class="text-block">Робототехника, машинное зрение, AI-инструменты.</p>
+          <p class="text-block">Люблю аккуратный код, минимализм в интерфейсах и ощущение, когда идея превращается в работающий продукт.</p>
+        </div>
+      </div>
     </div>
     <!-- Projects -->
     <section id="projects" style="display:none">
