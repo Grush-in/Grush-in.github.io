@@ -225,8 +225,10 @@
 
     /* ---------- Hero ---------- */
     .hero{ display:grid; grid-template-columns: 1fr; gap:32px; margin-top:26px}
-    .hero-main{ display:grid; grid-template-columns: 1fr 1fr; gap:32px; align-items:start; position:relative }
-    .hero-content{ display:flex; flex-direction:column; gap:60px }
+    .hero-main{ display:grid; grid-template-columns: 1fr 1fr; gap:32px; align-items:start; position:relative; grid-template-areas: "header avatar" "content avatar" }
+    .hero-header{ grid-area:header }
+    .avatar{ grid-area:avatar }
+    .hero-content{ grid-area:content; display:flex; flex-direction:column; gap:60px }
     
     /* Scroll Animations */
     .scroll-section{ opacity:0; transform:translateY(60px); transition:all 0.8s cubic-bezier(0.4, 0, 0.2, 1) }
@@ -401,9 +403,10 @@
     /* Ultra-wide and 4K screens (2560px and above) */
     @media (min-width: 2560px) {
       .container{ max-width:1800px; padding:48px }
-      .hero-main{ grid-template-columns: 1fr 1fr }
-      .hero-content{ order: 1 }
-      .avatar{ order: 2; min-height:1000px; align-self:start }
+      .hero-main{ grid-template-columns: 1fr 1fr; grid-template-areas: "header avatar" "content avatar" }
+      .hero-header{ grid-area:header }
+      .avatar{ grid-area:avatar; min-height:1000px; align-self:start }
+      .hero-content{ grid-area:content }
       .hero-title{ font-size:80px }
       .hero-subtitle{ font-size:32px }
       .section-title-main{ font-size:40px }
@@ -421,9 +424,10 @@
     /* Large monitors (1920px to 2559px) */
     @media (min-width: 1920px) and (max-width: 2559px) {
       .container{ max-width:1400px; padding:36px }
-      .hero-main{ grid-template-columns: 1fr 1fr }
-      .hero-content{ order: 1 }
-      .avatar{ order: 2; min-height:900px; align-self:start }
+      .hero-main{ grid-template-columns: 1fr 1fr; grid-template-areas: "header avatar" "content avatar" }
+      .hero-header{ grid-area:header }
+      .avatar{ grid-area:avatar; min-height:900px; align-self:start }
+      .hero-content{ grid-area:content }
       .hero-title{ font-size:72px }
       .hero-subtitle{ font-size:28px }
       .section-title-main{ font-size:36px }
@@ -455,9 +459,10 @@
     /* iPad Pro and similar (1024px and below) */
     @media (max-width: 1024px) {
       .container{ padding:22px }
-      .hero-main{ grid-template-columns: 1fr 1fr }
-      .hero-content{ order: 1 }
-      .avatar{ order: 2; min-height:600px; margin-bottom:0; position:sticky; top:90px; align-self:start }
+      .hero-main{ grid-template-columns: 1fr 1fr; grid-template-areas: "header avatar" "content avatar" }
+      .hero-header{ grid-area:header }
+      .avatar{ grid-area:avatar; min-height:600px; margin-bottom:0; position:sticky; top:90px; align-self:start }
+      .hero-content{ grid-area:content }
       .hero-title{ font-size:50px }
       .hero-subtitle{ font-size:21px }
       .section-title-main{ font-size:28px }
@@ -485,8 +490,7 @@
       .hero-main{ display:flex; flex-direction:column }
       .hero-header{ order: 1 }
       .avatar{ order: 2; min-height:400px; position:sticky; top:80px; z-index:1; width:100%; margin:20px 0 }
-      .scroll-section{ order: 3 }
-      .hero-content{ display:flex; flex-direction:column }
+      .hero-content{ order: 3; display:flex; flex-direction:column }
       .hero-grid{ grid-template-columns: 1fr }
       .hero-title{ font-size:44px }
       .hero-subtitle{ font-size:20px }
@@ -536,8 +540,7 @@
       .hero-main{ display:flex; flex-direction:column }
       .hero-header{ order: 1 }
       .avatar{ order: 2; min-height:350px; position:sticky; top:70px; z-index:1; width:100%; margin:20px 0 }
-      .scroll-section{ order: 3 }
-      .hero-content{ display:flex; flex-direction:column }
+      .hero-content{ order: 3; display:flex; flex-direction:column }
       .hero-title{ font-size:36px }
       .hero-subtitle{ font-size:18px }
       .section-title-main{ font-size:22px }
@@ -587,8 +590,7 @@
       .hero-main{ display:flex; flex-direction:column }
       .hero-header{ order: 1; padding:0 0 12px 0 }
       .avatar{ order: 2; min-height:300px; position:sticky; top:60px; z-index:1; width:100%; margin:16px 0 }
-      .scroll-section{ order: 3 }
-      .hero-content{ display:flex; flex-direction:column }
+      .hero-content{ order: 3; display:flex; flex-direction:column }
       .hero-title{ font-size:28px; line-height:1.2 }
       .hero-subtitle{ font-size:16px }
       .section-title-main{ font-size:20px }
@@ -651,8 +653,7 @@
       .hero-main{ display:flex; flex-direction:column }
       .hero-header{ order: 1 }
       .avatar{ order: 2; min-height:250px; position:sticky; top:50px; z-index:1; width:100%; margin:12px 0 }
-      .scroll-section{ order: 3 }
-      .hero-content{ display:flex; flex-direction:column }
+      .hero-content{ order: 3; display:flex; flex-direction:column }
       .hero-title{ font-size:24px }
       .hero-subtitle{ font-size:14px }
       .section-title-main{ font-size:18px }
@@ -700,9 +701,10 @@
     
     /* Mobile landscape optimization */
     @media (max-width: 940px) and (orientation: landscape) {
-      .hero-main{ display:grid; grid-template-columns: 1fr 0.8fr }
-      .hero-content{ order: 1 }
-      .avatar{ order: 2; min-height:300px; margin-bottom:0; position:sticky; top:70px; align-self:start }
+      .hero-main{ display:grid; grid-template-columns: 1fr 0.8fr; grid-template-areas: "header avatar" "content avatar" }
+      .hero-header{ grid-area:header }
+      .avatar{ grid-area:avatar; min-height:300px; margin-bottom:0; position:sticky; top:70px; align-self:start }
+      .hero-content{ grid-area:content }
       .hero-title{ font-size:32px }
       .hero-subtitle{ font-size:16px }
       .section-title-main{ font-size:20px }
@@ -758,14 +760,19 @@
     <!-- Hero -->
     <div class="hero" id="about">
       <div class="hero-main">
+        <!-- Заголовок (всегда видим) -->
+        <div class="hero-header">
+          <h1 class="hero-title">Кирилл <span style="color:var(--primary)">Grush</span>kin</h1>
+          <p class="hero-subtitle">Mobile App & AI Developer</p>
+        </div>
+
+        <!-- Аватар/Фото -->
+        <div class="avatar" aria-label="avatar">
+          <img src="images/me.png" alt="Кирилл" />
+        </div>
+
         <!-- Left Content -->
         <div class="hero-content">
-          <!-- Заголовок (всегда видим) -->
-          <div class="hero-header">
-            <h1 class="hero-title">Кирилл <span style="color:var(--primary)">Grush</span>kin</h1>
-            <p class="hero-subtitle">Mobile App & AI Developer</p>
-          </div>
-
           <!-- Hard Skills (всегда видим первым) -->
           <div class="scroll-section visible">
             <h2 class="section-title-main">💻 Hard Skills</h2>
@@ -858,11 +865,6 @@
               <span class="soft-badge">Компас-3D</span>
             </div>
           </div>
-        </div>
-
-        <!-- Аватар/Фото -->
-        <div class="avatar" aria-label="avatar">
-          <img src="images/me.png" alt="Кирилл" />
         </div>
       </div>
     </div>
