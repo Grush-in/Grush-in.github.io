@@ -398,6 +398,44 @@
 
     /* ---------- Responsive ---------- */
     
+    /* Ultra-wide and 4K screens (2560px and above) */
+    @media (min-width: 2560px) {
+      .container{ max-width:1800px; padding:48px }
+      .hero-main{ grid-template-columns: 1fr 1fr }
+      .hero-content{ order: 1 }
+      .avatar{ order: 2; min-height:1000px }
+      .hero-title{ font-size:80px }
+      .hero-subtitle{ font-size:32px }
+      .section-title-main{ font-size:40px }
+      .title{ font-size:40px }
+      .card .thumb{ height:240px }
+      .text-block, .quote-text{ font-size:20px }
+      .skill-label, .skill-value{ font-size:20px }
+      .soft-badge{ font-size:18px; padding:14px 24px }
+      .cards{ grid-template-columns: repeat(3, 1fr); gap:24px }
+      .edu-title{ font-size:22px }
+      .edu-desc{ font-size:19px }
+      .section-title{ font-size:22px }
+    }
+    
+    /* Large monitors (1920px to 2559px) */
+    @media (min-width: 1920px) and (max-width: 2559px) {
+      .container{ max-width:1400px; padding:36px }
+      .hero-main{ grid-template-columns: 1fr 1fr }
+      .hero-content{ order: 1 }
+      .avatar{ order: 2; min-height:900px }
+      .hero-title{ font-size:72px }
+      .hero-subtitle{ font-size:28px }
+      .section-title-main{ font-size:36px }
+      .card .thumb{ height:200px }
+      .text-block, .quote-text{ font-size:19px }
+      .skill-label, .skill-value{ font-size:19px }
+      .cards{ grid-template-columns: repeat(3, 1fr); gap:20px }
+      .edu-title{ font-size:21px }
+      .edu-desc{ font-size:18px }
+      .section-title{ font-size:20px }
+    }
+    
     /* Large tablets and laptops (1440px and below) */
     @media (max-width: 1440px) {
       .container{ max-width:1200px; padding:28px }
@@ -417,10 +455,12 @@
     /* iPad Pro and similar (1024px and below) */
     @media (max-width: 1024px) {
       .container{ padding:22px }
+      .hero-main{ grid-template-columns: 1fr 1fr }
+      .hero-content{ order: 1 }
+      .avatar{ order: 2; min-height:600px; margin-bottom:0 }
       .hero-title{ font-size:50px }
       .hero-subtitle{ font-size:21px }
       .section-title-main{ font-size:28px }
-      .avatar{ min-height:600px }
       .cards{ grid-template-columns: repeat(2, 1fr); gap:16px }
       
       /* Touch-friendly sizing */
@@ -442,9 +482,10 @@
       .tabs{ gap:3px }
       
       /* Hero section */
-      .hero-main{ grid-template-columns: 1fr }
+      .hero-main{ grid-template-columns: 1fr; grid-template-rows: auto auto }
+      .hero-content{ order: 2 }
+      .avatar{ order: 1; min-height:400px; margin-bottom:20px }
       .hero-grid{ grid-template-columns: 1fr }
-      .avatar{ min-height:400px; margin-bottom:20px }
       .hero-title{ font-size:44px }
       .hero-subtitle{ font-size:20px }
       .section-title-main{ font-size:26px }
@@ -490,10 +531,12 @@
       
       /* Hero */
       .hero{ margin-top:16px; gap:20px }
+      .hero-main{ grid-template-columns: 1fr; grid-template-rows: auto auto }
+      .hero-content{ order: 2 }
+      .avatar{ order: 1; min-height:350px; margin-bottom:20px }
       .hero-title{ font-size:36px }
       .hero-subtitle{ font-size:18px }
       .section-title-main{ font-size:22px }
-      .avatar{ min-height:350px }
       
       /* Cards - single column on mobile */
       .cards{ grid-template-columns: 1fr; gap:12px }
@@ -501,7 +544,8 @@
       /* Services */
       .service-preview{ min-width:100px }
       .service-title{ font-size:16px }
-      .service-content{ max-height:400px; overflow-y:auto }
+      .service-item.active .service-content{ max-height:400px; overflow-y:auto }
+      .service-header{ flex-direction:row }
       
       /* Roadmap */
       .roadmap-item{ padding:14px }
@@ -536,12 +580,14 @@
       
       /* Hero */
       .hero{ gap:16px; margin-top:12px }
+      .hero-main{ grid-template-columns: 1fr }
+      .hero-content{ order: 2 }
+      .avatar{ order: 1; min-height:300px; margin-bottom:16px }
       .hero-header{ padding:0 0 12px 0 }
       .hero-title{ font-size:28px; line-height:1.2 }
       .hero-subtitle{ font-size:16px }
       .section-title-main{ font-size:20px }
       .section-title{ font-size:16px }
-      .avatar{ min-height:300px }
       
       /* Text sizes */
       .title{ font-size:20px }
@@ -567,13 +613,13 @@
       .card h3{ font-size:18px }
       
       /* Services */
-      .service-header{ height:60px; flex-direction:column; align-items:stretch }
-      .service-preview{ min-width:auto; width:100%; height:60px; clip-path:none }
-      .service-item.active .service-preview{ height:0; padding:0 }
-      .service-title-wrap{ padding:12px }
+      .service-header{ height:auto; min-height:60px; flex-direction:row; align-items:center; flex-wrap:wrap }
+      .service-preview{ min-width:80px; width:auto; height:60px }
+      .service-item.active .service-preview{ width:0; height:0; min-width:0; padding:0 }
+      .service-title-wrap{ padding:12px; flex:1 }
       .service-title{ font-size:15px }
       .service-status{ font-size:11px; padding:3px 8px }
-      .service-content{ padding:12px }
+      .service-item.active .service-content{ padding:12px; max-height:600px }
       
       /* Panels and spacing */
       .panel.inner{ padding:16px }
@@ -597,11 +643,13 @@
       
       /* Hero */
       .hero{ gap:12px }
+      .hero-main{ grid-template-columns: 1fr }
+      .hero-content{ order: 2 }
+      .avatar{ order: 1; min-height:250px; margin-bottom:12px }
       .hero-title{ font-size:24px }
       .hero-subtitle{ font-size:14px }
       .section-title-main{ font-size:18px }
       .section-title{ font-size:15px }
-      .avatar{ min-height:250px }
       .hero-grid{ gap:10px }
       
       /* Text */
@@ -616,6 +664,10 @@
       .service-title{ font-size:14px }
       .service-status{ font-size:10px; padding:2px 6px }
       .service-item{ margin-bottom:12px }
+      .service-header{ min-height:50px }
+      .service-preview{ min-width:60px; height:50px }
+      .service-title-wrap{ padding:10px }
+      .service-item.active .service-content{ max-height:500px; padding:10px }
       
       /* Panels */
       .panel.inner{ padding:14px }
@@ -642,7 +694,8 @@
     /* Mobile landscape optimization */
     @media (max-width: 940px) and (orientation: landscape) {
       .hero-main{ grid-template-columns: 1fr 0.8fr }
-      .avatar{ min-height:300px }
+      .hero-content{ order: 1 }
+      .avatar{ order: 2; min-height:300px; margin-bottom:0 }
       .hero-title{ font-size:32px }
       .hero-subtitle{ font-size:16px }
       .section-title-main{ font-size:20px }
