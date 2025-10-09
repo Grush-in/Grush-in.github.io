@@ -1,3 +1,373 @@
-<H1>
-Тест
-</H1>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEON//CODE — Portfolio</title>
+  <style>
+    /* ---------- Fonts ---------- */
+    @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400; src: local('Inter'), local('Inter-Regular'); }
+    @font-face { font-family: 'Orbitron'; font-style: normal; font-weight: 600; src: local('Orbitron'), local('Orbitron-SemiBold'); }
+
+    /* ---------- CSS Variables ---------- */
+    :root{
+      --bg:#0d0f14;           /* deep graphite */
+      --panel:#141823;        /* panel dark */
+      --glass:rgba(255,255,255,0.04);
+      --card:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      --text:#e7e7ee;
+      --muted:#95a0b3;
+      --primary:#a855f7;      /* neon purple */
+      --primary-2:#3bb7ff;    /* cyber blue */
+      --ok:#18cc8b;
+      --danger:#ff5577;
+      --shadow:0 10px 30px rgba(0,0,0,.45);
+      --radius:18px;
+    }
+
+    /* ---------- Base ---------- */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background: radial-gradient(1200px 600px at 80% -30%, rgba(168,85,247,0.15), transparent 60%),
+                               radial-gradient(900px 500px at -10% 100%, rgba(59,183,255,0.12), transparent 60%),
+                               var(--bg);
+      color:var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+      overflow-x:hidden;
+    }
+    a{color:var(--primary)}
+    .container{max-width:1200px;margin:0 auto;padding:32px}
+
+    /* ---------- Header ---------- */
+    header{
+      position:sticky; top:0; z-index:20;
+      backdrop-filter:saturate(1.3) blur(10px);
+      background:linear-gradient(180deg, rgba(20,24,35,.8), rgba(20,24,35,.4));
+      border-bottom:1px solid rgba(255,255,255,0.08);
+    }
+    .nav{display:flex; align-items:center; gap:18px}
+    .logo{font-family:Orbitron, Inter, sans-serif; letter-spacing:.06em; font-weight:600}
+    .logo-mark{display:inline-block; width:12px; height:12px; border-radius:4px; background:linear-gradient(135deg, var(--primary), var(--primary-2)); margin-right:10px; box-shadow:0 0 16px rgba(168,85,247,.7)}
+    .spacer{flex:1}
+    .tabs{display:flex; gap:8px}
+    .tab-btn{
+      border:none; padding:10px 14px; border-radius:12px; cursor:pointer; color:var(--text);
+      background:var(--glass); border:1px solid rgba(255,255,255,.06); transition:all .2s ease;
+    }
+    .tab-btn.active, .tab-btn:hover{ background:linear-gradient(180deg, rgba(168,85,247,.18), rgba(255,255,255,.06)); box-shadow:0 0 0 1px rgba(168,85,247,.3), 0 6px 18px rgba(168,85,247,.18)}
+
+    /* ---------- Hero ---------- */
+    .hero{ display:grid; grid-template-columns: 1.2fr .8fr; gap:28px; align-items:stretch; margin-top:26px}
+    .panel{ background:var(--panel); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .panel.inner{ padding:26px }
+    .title{ font-size:38px; line-height:1.15; margin:0 0 10px 0; font-weight:700 }
+    .subtitle{ color:var(--muted); margin:0 0 22px 0 }
+    .badges{display:flex; gap:10px; flex-wrap:wrap}
+    .badge{ background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.1); padding:8px 12px; border-radius:999px; display:inline-flex; align-items:center; gap:8px; font-size:13px}
+    .badge::before{ content:""; width:6px; height:6px; border-radius:3px; background:var(--primary); box-shadow:0 0 10px rgba(168,85,247,.9)}
+
+    .avatar{
+      position:relative; height:100%; background:radial-gradient(600px 300px at 30% 0%, rgba(168,85,247,.25), transparent 50%), url('https://images.unsplash.com/photo-1503342217505-b0a15cf70489?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;
+    }
+    .avatar::after{content:""; position:absolute; inset:0; background:linear-gradient(45deg, rgba(59,183,255,.25), rgba(168,85,247,.15)); mix-blend:screen}
+
+    /* ---------- Sections ---------- */
+    section{margin-top:28px}
+    .cards{ display:grid; grid-template-columns: repeat(3, 1fr); gap:18px }
+    .card{ background:var(--glass); border:1px solid rgba(255,255,255,.08); border-radius:16px; overflow:hidden; position:relative}
+    .card:hover{ box-shadow:0 14px 36px rgba(168,85,247,.12) }
+    .card .thumb{ height:160px; background:linear-gradient(120deg, rgba(168,85,247,.25), rgba(59,183,255,.2));}
+    .card .content{ padding:14px 16px }
+    .pill{ font-size:12px; padding:4px 8px; border:1px solid rgba(255,255,255,.14); border-radius:999px; margin-right:8px; color:var(--muted)}
+    .cta{ display:inline-block; margin-top:8px; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.14); background:linear-gradient(180deg, rgba(168,85,247,.16), rgba(255,255,255,.04)); color:var(--text); text-decoration:none }
+
+    /* ---------- Dashboard (Services) ---------- */
+    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:18px }
+    .stat{ background:var(--glass); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:16px }
+    .stat h4{ margin:0 0 6px 0 }
+    .meter{ height:8px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden }
+    .meter > span{ display:block; height:100%; background:linear-gradient(90deg, var(--primary), var(--primary-2)); box-shadow:0 0 16px rgba(168,85,247,.6) inset }
+
+    /* ---------- Roadmap ---------- */
+    .roadmap{ position:relative; padding-left:24px }
+    .roadmap::before{ content:""; position:absolute; left:6px; top:0; bottom:0; width:2px; background:linear-gradient(var(--primary), transparent); opacity:.5 }
+    .rm-item{ position:relative; margin:0 0 14px 0; padding:12px 14px; border-radius:12px; background:var(--glass); border:1px solid rgba(255,255,255,.08) }
+    .rm-item::before{ content:""; position:absolute; left:-3px; top:16px; width:8px; height:8px; border-radius:50%; background:var(--primary); box-shadow:0 0 10px rgba(168,85,247,.8) }
+    .rm-badge{ font-size:12px; padding:3px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.14); margin-left:8px }
+    .rm-done{ color:#b6f5d9; border-color:rgba(24,204,139,.4) }
+    .rm-next{ color:#bfe6ff; border-color:rgba(59,183,255,.4) }
+    .rm-idea{ color:#f8d1ff; border-color:rgba(168,85,247,.5) }
+
+    /* ---------- Floating AI Assistant ---------- */
+    .chat-fab{
+      position:fixed; right:22px; bottom:22px; z-index:40;
+      width:56px; height:56px; border-radius:50%; border:none; cursor:pointer;
+      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.25), rgba(255,255,255,.08)),
+                 linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow:0 10px 28px rgba(0,0,0,.45), 0 0 24px rgba(168,85,247,.45);
+      color:white; font-weight:700; font-size:18px;
+    }
+    .chat{
+      position:fixed; right:22px; bottom:90px; z-index:40; width:340px;
+      background:linear-gradient(180deg, rgba(20,24,35,.95), rgba(20,24,35,.85));
+      border:1px solid rgba(255,255,255,.08); border-radius:18px; box-shadow:var(--shadow);
+      display:none; overflow:hidden
+    }
+    .chat header{ position:static; background:transparent; border:none; padding:12px 14px }
+    .chat-title{ font-family:Orbitron; font-size:14px; letter-spacing:.08em }
+    .chat-log{ height:260px; overflow:auto; padding:12px; display:flex; flex-direction:column; gap:8px }
+    .msg{ padding:10px 12px; border-radius:12px; max-width:78%; line-height:1.35 }
+    .bot{ background:rgba(168,85,247,.12); border:1px solid rgba(168,85,247,.35) }
+    .user{ align-self:flex-end; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14) }
+    .chat-input{ display:flex; gap:8px; padding:10px; border-top:1px solid rgba(255,255,255,.06) }
+    .chat-input input{ flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:var(--text) }
+    .chat-input button{ padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.14); background:linear-gradient(180deg, rgba(168,85,247,.3), rgba(255,255,255,.06)); color:var(--text); cursor:pointer }
+    .chat-suggestions{ display:flex; gap:8px; padding:0 12px 12px 12px; flex-wrap:wrap }
+    .chip{ font-size:12px; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); cursor:pointer }
+
+    /* ---------- System Boot Overlay ---------- */
+    .boot{ position:fixed; inset:0; background:#04050a; z-index:100; display:flex; align-items:center; justify-content:center; color:#cfd8ff; flex-direction:column; gap:16px }
+    .boot .terminal{ width:min(760px, 92vw); height:min(360px, 60vh); background:#0a0c12; border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:16px; box-shadow:0 0 40px rgba(59,183,255,.15) inset; font-family:monospace; overflow:hidden }
+    .boot .blink{ animation:blink 1s step-end infinite }
+    @keyframes blink{ 50%{opacity:0} }
+    .progress{ width:62%; height:8px; background:#141823; border-radius:999px; overflow:hidden; border:1px solid rgba(255,255,255,.12) }
+    .progress span{ display:block; width:0%; height:100%; background:linear-gradient(90deg, var(--primary), var(--primary-2)); box-shadow:0 0 14px rgba(59,183,255,.4) }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 940px){
+      .hero{ grid-template-columns: 1fr; }
+      .cards{ grid-template-columns: 1fr 1fr }
+      .grid-2{ grid-template-columns: 1fr }
+    }
+    @media (max-width: 640px){
+      .cards{ grid-template-columns: 1fr }
+    }
+  </style>
+</head>
+<body>
+  <!-- System Boot Overlay -->
+  <div class="boot" id="boot">
+    <div class="terminal" id="term"></div>
+    <div class="progress"><span id="bar"></span></div>
+    <div>Launching NEON//CODE<span class="blink">_</span></div>
+  </div>
+
+  <!-- Header / Nav -->
+  <header>
+    <div class="container nav">
+      <div class="logo"><span class="logo-mark"></span>NEON//CODE</div>
+      <div class="spacer"></div>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="about">Обо мне</button>
+        <button class="tab-btn" data-tab="projects">Pet‑проекты</button>
+        <button class="tab-btn" data-tab="services">Сервисы</button>
+        <button class="tab-btn" data-tab="roadmap">Roadmap</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero -->
+    <div class="hero" id="about">
+      <div class="panel inner">
+        <h1 class="title">Привет! Я Кирилл — разработчик, который любит собирать сервисы и AI‑инструменты.</h1>
+        <p class="subtitle">Python • Dart/Flutter • Image Processing • Bots • FastAPI</p>
+        <div class="badges">
+          <span class="badge">Python</span>
+          <span class="badge">Dart</span>
+          <span class="badge">Flutter</span>
+          <span class="badge">OpenCV</span>
+          <span class="badge">FastAPI</span>
+        </div>
+        <section>
+          <h3>Что я делаю</h3>
+          <p>Делаю лёгкие в использовании инструменты, ботов и аналитические панели. Люблю аккуратный код, понятную архитектуру и небольшие детали UX.</p>
+        </section>
+      </div>
+      <div class="panel avatar" aria-label="avatar"></div>
+    </div>
+
+    <!-- Projects -->
+    <section id="projects" style="display:none">
+      <h2>Pet‑проекты</h2>
+      <div class="cards">
+        <article class="card">
+          <div class="thumb"></div>
+          <div class="content">
+            <div><span class="pill">AI</span><span class="pill">Bot</span></div>
+            <h3>Telegram AI Assistant</h3>
+            <p class="subtitle">Ассистент для поиска и резюме статей. FastAPI + OpenAI + Redis.</p>
+            <a href="#" class="cta">Подробнее</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="thumb"></div>
+          <div class="content">
+            <div><span class="pill">Image</span><span class="pill">CV</span></div>
+            <h3>Image Lab</h3>
+            <p class="subtitle">Набор фильтров и сегментации: OpenCV + PyTorch U‑Net.</p>
+            <a href="#" class="cta">Подробнее</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="thumb"></div>
+          <div class="content">
+            <div><span class="pill">Web</span><span class="pill">API</span></div>
+            <h3>Stats Dashboard</h3>
+            <p class="subtitle">Панель аналитики для сервисов с публичным API.</p>
+            <a href="#" class="cta">Подробнее</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Services Dashboard -->
+    <section id="services" style="display:none">
+      <h2>Рабочие сервисы</h2>
+      <div class="grid-2">
+        <div class="stat">
+          <h4>VPN Service — Online users</h4>
+          <div style="font-size:28px; font-weight:700; margin:8px 0">128</div>
+          <div class="meter"><span style="width:62%"></span></div>
+          <p class="subtitle">Заглушка. Подключи реальный бэкенд (WebSocket/REST) и обновляй значения.</p>
+        </div>
+        <div class="stat">
+          <h4>Bot Subscriptions — Monthly</h4>
+          <div style="font-size:28px; font-weight:700; margin:8px 0">₽ 6 500</div>
+          <div class="meter"><span style="width:40%"></span></div>
+          <p class="subtitle">Подставь реальные данные и рендер график (Chart.js/D3/Recharts).</p>
+        </div>
+        <div class="stat">
+          <h4>График активности (placeholder)</h4>
+          <div id="chart" style="height:220px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:12px"></div>
+          <p class="subtitle">Можно заменить на canvas‑график. Сейчас отрисуется простая линия SVG.</p>
+        </div>
+        <div class="stat">
+          <h4>Состояние API</h4>
+          <p><span style="color:var(--ok)">●</span> FastAPI — OK</p>
+          <p><span style="color:var(--ok)">●</span> Telegram Bot — OK</p>
+          <p><span style="color:var(--danger)">●</span> Billing — Лимиты</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section id="roadmap" style="display:none">
+      <h2>Roadmap</h2>
+      <div class="roadmap">
+        <div class="rm-item"><strong>v0.1</strong> — Одностраничный лендинг <span class="rm-badge rm-done">готово</span><br/><span class="subtitle">Структура, базовый стиль, загрузчик.</span></div>
+        <div class="rm-item"><strong>v0.2</strong> — Подключение данных к сервисам <span class="rm-badge rm-next">в работе</span><br/><span class="subtitle">REST/WebSocket, простые графики.</span></div>
+        <div class="rm-item"><strong>v0.3</strong> — SEO и публикации <span class="rm-badge rm-idea">идея</span><br/><span class="subtitle">Страница поста, поиск, OpenGraph.</span></div>
+        <div class="rm-item"><strong>v0.4</strong> — Темизация и i18n <span class="rm-badge rm-idea">идея</span><br/><span class="subtitle">Светлая/тёмная, RU/EN переключатели.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Floating AI Assistant -->
+  <button class="chat-fab" id="chatFab">✦</button>
+  <div class="chat" id="chatBox" aria-live="polite">
+    <header>
+      <div class="chat-title">NEON//AI — портфолио‑помощник</div>
+    </header>
+    <div class="chat-suggestions" id="chatSugg">
+      <span class="chip" data-q="Расскажи о тебе">Расскажи о тебе</span>
+      <span class="chip" data-q="Покажи pet‑проекты">Покажи pet‑проекты</span>
+      <span class="chip" data-q="Как связаться?">Как связаться?</span>
+    </div>
+    <div class="chat-log" id="chatLog"></div>
+    <div class="chat-input">
+      <input id="chatInput" placeholder="Спроси: что я делаю?" />
+      <button id="chatSend">Отправить</button>
+    </div>
+  </div>
+
+  <script>
+    /* ---------- Tabs ---------- */
+    const tabs = document.querySelectorAll('.tab-btn');
+    const sections = ['about','projects','services','roadmap'].map(id=>document.getElementById(id));
+    tabs.forEach(btn=>btn.addEventListener('click',()=>{
+      tabs.forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+      sections.forEach(s=>s.style.display='none');
+      document.getElementById(btn.dataset.tab).style.display='block';
+      window.scrollTo({top:0, behavior:'smooth'});
+    }));
+
+    /* ---------- Placeholder SVG line chart ---------- */
+    const chart = document.getElementById('chart');
+    const w = chart.clientWidth, h = chart.clientHeight;
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('width', w); svg.setAttribute('height', h);
+    const path = document.createElementNS(svgNS, 'path');
+    const pts = Array.from({length:18}, (_,i)=>({x: i/(18-1)*w, y: h*0.6 - Math.sin(i*0.6 + 1.2)*h*0.25 - (i%5?0:14)}));
+    const d = 'M'+pts.map((p,i)=> (i? 'L':'') + p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+    path.setAttribute('d', d);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke','url(#g)');
+    path.setAttribute('stroke-width','2');
+    const defs = document.createElementNS(svgNS,'defs');
+    const grad = document.createElementNS(svgNS,'linearGradient');
+    grad.id='g'; grad.setAttribute('x1','0%'); grad.setAttribute('x2','100%'); grad.setAttribute('y1','0%'); grad.setAttribute('y2','0%');
+    const s1=document.createElementNS(svgNS,'stop'); s1.setAttribute('offset','0%'); s1.setAttribute('stop-color','var(--primary)');
+    const s2=document.createElementNS(svgNS,'stop'); s2.setAttribute('offset','100%'); s2.setAttribute('stop-color','var(--primary-2)');
+    grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad);
+    svg.appendChild(defs); svg.appendChild(path); chart.appendChild(svg);
+
+    /* ---------- Chat Assistant (rule-based demo) ---------- */
+    const fab = document.getElementById('chatFab');
+    const box = document.getElementById('chatBox');
+    const log = document.getElementById('chatLog');
+    const input = document.getElementById('chatInput');
+    const send = document.getElementById('chatSend');
+    const sugg = document.getElementById('chatSugg');
+
+    const addMsg = (text, who='bot') => {
+      const div=document.createElement('div'); div.className='msg '+who; div.textContent=text; log.appendChild(div); log.scrollTop=log.scrollHeight;
+    };
+    const botReply = (q) => {
+      q = (q||'').toLowerCase();
+      if(q.includes('связ')||q.includes('contact')) return 'Связаться: Telegram @yourhandle • email@domain.dev • GitHub github.com/yourname';
+      if(q.includes('проект')||q.includes('pet')) return 'Открой вкладку «Pet‑проекты». Там карточки и ссылки на репозитории.';
+      if(q.includes('кто')||q.includes('о тебе')||q.includes('about')) return 'Я Кирилл: Python/Dart, делаю ботов и панели, люблю CV и FastAPI.';
+      if(q.includes('стек')||q.includes('stack')) return 'Стек: Python, FastAPI, PostgreSQL, Redis, Dart/Flutter, OpenCV, Docker, Nginx.';
+      return 'Я пока простой виджет. Задай вопрос про меня, проекты или как связаться. 🙂';
+    };
+
+    fab.addEventListener('click', ()=>{ box.style.display = (box.style.display==='block') ? 'none' : 'block'; });
+    send.addEventListener('click', ()=>{
+      const v=input.value.trim(); if(!v) return; addMsg(v,'user'); addMsg(botReply(v),'bot'); input.value=''; input.focus();
+    });
+    input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ send.click(); }});
+    sugg.addEventListener('click', (e)=>{ const t=e.target.closest('.chip'); if(!t) return; input.value=t.dataset.q; send.click(); });
+
+    /* ---------- System Boot Animation ---------- */
+    const boot = document.getElementById('boot');
+    const term = document.getElementById('term');
+    const bar = document.getElementById('bar');
+
+    const lines = [
+      '[BOOT] Initializing core modules... OK',
+      '[BOOT] Loading UI skin: NEON//CODE',
+      '[NET ] Checking endpoints: api/v1 • ws... OK',
+      '[DB  ] Connecting: redis://cache • postgres://db... OK',
+      '[AUTH] Tokens: refreshed',
+      '[I18N] Locale set: ru-RU',
+      '[READY] Launching portfolio...'
+    ];
+
+    let i=0; let p=0;
+    const write = () => {
+      if(i < lines.length){
+        term.textContent += lines[i] + '\n';
+        i++; p += Math.floor(100/lines.length);
+        bar.style.width = Math.min(p, 100) + '%';
+        setTimeout(write, 260);
+      } else {
+        bar.style.width = '100%';
+        setTimeout(()=>{ boot.style.opacity='1'; boot.style.transition='opacity .6s ease'; boot.style.opacity='0'; setTimeout(()=>boot.remove(), 600); }, 380);
+      }
+    };
+    window.addEventListener('load', write);
+  </script>
+</body>
+</html>
