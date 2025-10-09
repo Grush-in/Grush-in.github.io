@@ -186,39 +186,12 @@
       </div>
       <div class="panel avatar" aria-label="avatar"></div>
     </div>
-
     <!-- Projects -->
     <section id="projects" style="display:none">
       <h2>Pet‑проекты</h2>
-      <div class="cards">
-        <article class="card">
-          <div class="thumb"></div>
-          <div class="content">
-            <div><span class="pill">AI</span><span class="pill">Bot</span></div>
-            <h3>Telegram AI Assistant</h3>
-            <p class="subtitle">Ассистент для поиска и резюме статей. FastAPI + OpenAI + Redis.</p>
-            <a href="#" class="cta">Подробнее</a>
-          </div>
-        </article>
-        <article class="card">
-          <div class="thumb"></div>
-          <div class="content">
-            <div><span class="pill">Image</span><span class="pill">CV</span></div>
-            <h3>Image Lab</h3>
-            <p class="subtitle">Набор фильтров и сегментации: OpenCV + PyTorch U‑Net.</p>
-            <a href="#" class="cta">Подробнее</a>
-          </div>
-        </article>
-        <article class="card">
-          <div class="thumb"></div>
-          <div class="content">
-            <div><span class="pill">Web</span><span class="pill">API</span></div>
-            <h3>Stats Dashboard</h3>
-            <p class="subtitle">Панель аналитики для сервисов с публичным API.</p>
-            <a href="#" class="cta">Подробнее</a>
-          </div>
-        </article>
-      </div>
+      <div id="projectsFilters" class="badges" style="margin-bottom:12px; display:none"></div>
+      <div id="projectsGrid" class="cards"></div>
+      <div id="projectsEmpty" class="subtitle" style="display:none; margin-top:8px">Проекты не найдены. Проверь имя пользователя GitHub.</div>
     </section>
 
     <!-- Services Dashboard -->
@@ -288,9 +261,74 @@
     tabs.forEach(btn=>btn.addEventListener('click',()=>{
       tabs.forEach(b=>b.classList.remove('active')); btn.classList.add('active');
       sections.forEach(s=>s.style.display='none');
-      document.getElementById(btn.dataset.tab).style.display='block';
+      const target = document.getElementById(btn.dataset.tab);
+      target.style.display='block';
       window.scrollTo({top:0, behavior:'smooth'});
+      if(btn.dataset.tab==='projects') ensureProjectsLoaded();
     }));
+
+    /* ---------- GitHub Projects ---------- */
+    const GITHUB_USER = 'Grush-in';                 // ← твой GitHub логин
+    const ALLOWLIST = null; // например: ['vpn-bot','image-lab']; // ← оставь null чтобы показывать все public-репозитории
+
+    let projectsLoaded = false;
+    async function ensureProjectsLoaded(){ if(!projectsLoaded){ await loadProjects(); projectsLoaded = true; } }
+
+    async function loadProjects(){
+      const grid = document.getElementById('projectsGrid');
+      const empty = document.getElementById('projectsEmpty');
+      const filters = document.getElementById('projectsFilters');
+
+      grid.innerHTML = '';
+      grid.insertAdjacentHTML('beforeend', '<div class="subtitle">Загружаю проекты…</div>');
+      try{
+        const res = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=updated`);
+        const data = await res.json();
+        let repos = Array.isArray(data) ? data : [];
+        if(ALLOWLIST && Array.isArray(ALLOWLIST)){
+          repos = repos.filter(r=> ALLOWLIST.includes(r.name));
+        }
+        // Фильтрация: прячем форки/архивные
+        repos = repos.filter(r=> !r.fork && !r.archived);
+        // Сортировка по звёздам и активности
+        repos.sort((a,b)=> (b.stargazers_count - a.stargazers_count) || (new Date(b.pushed_at) - new Date(a.pushed_at)) );
+
+        if(repos.length===0){ grid.innerHTML=''; empty.style.display='block'; return; }
+
+        // Теги из языков
+        const langs = [...new Set(repos.map(r=>r.language).filter(Boolean))];
+        if(langs.length){
+          filters.style.display='flex';
+          filters.innerHTML = '<span class="pill">Все</span>' + langs.map(l=>`<span class="pill" data-lang="${l}">${l}</span>`).join('');
+          filters.addEventListener('click', (e)=>{
+            const p = e.target.closest('.pill'); if(!p) return;
+            const lang = p.dataset.lang || 'all';
+            render(repos, lang);
+          });
+        }
+        render(repos, 'all');
+
+        function render(items, lang){
+          grid.innerHTML='';
+          items.filter(r=> lang==='all' || r.language===lang).forEach(r=>{
+            const site = r.homepage && r.homepage.startsWith('http') ? `<a class="cta" href="${r.homepage}" target="_blank" rel="noreferrer">Демо</a>` : '';
+            const desc = r.description ? r.description : 'Описание не добавлено';
+            grid.insertAdjacentHTML('beforeend', `
+              <article class="card">
+                <div class="thumb" style="background-image:linear-gradient(120deg, rgba(168,85,247,.12), rgba(59,183,255,.12)); background-size:cover"></div>
+                <div class="content">
+                  <div><span class="pill">${r.language || 'Misc'}</span><span class="pill">★ ${r.stargazers_count}</span></div>
+                  <h3>${r.name}</h3>
+                  <p class="subtitle">${desc}</p>
+                  <a class="cta" href="${r.html_url}" target="_blank" rel="noreferrer">Репозиторий</a>
+                  ${site}
+                </div>
+              </article>
+            `);
+          });
+        }
+      }catch(e){ grid.innerHTML=''; empty.style.display='block'; console.error(e); }
+    }
 
     /* ---------- Placeholder SVG line chart ---------- */
     const chart = document.getElementById('chart');
