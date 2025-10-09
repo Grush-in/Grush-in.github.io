@@ -57,7 +57,7 @@
     .tab-btn.active, .tab-btn:hover{ background:linear-gradient(180deg, rgba(168,85,247,.18), rgba(255,255,255,.06)); box-shadow:0 0 0 1px rgba(168,85,247,.3), 0 6px 18px rgba(168,85,247,.18)}
 
     /* ---------- Hero ---------- */
-    .hero{ display:grid; grid-template-columns: 1fr; gap:18px; margin-top:26px}
+    .hero{ display:grid; grid-template-columns: 1fr; gap:32px; margin-top:26px}
     .hero-main{ display:grid; grid-template-columns: 1.2fr 0.8fr; gap:18px }
     .hero-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap:18px }
     .panel{ background:var(--panel); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
@@ -72,9 +72,8 @@
     .text-block{ line-height:1.6; color:var(--muted); margin:8px 0 }
     
     .avatar{
-      position:relative; height:100%; min-height:500px; background:radial-gradient(600px 300px at 30% 0%, rgba(168,85,247,.25), transparent 50%), url('images/me.png') center/cover no-repeat;
+      position:relative; height:100%; min-height:500px; background:url('images/me.png') center/cover no-repeat;
     }
-    .avatar::after{content:""; position:absolute; inset:0; background:linear-gradient(45deg, rgba(59,183,255,.25), rgba(168,85,247,.15)); mix-blend-mode:screen}
 
     /* ---------- Sections ---------- */
     section{margin-top:28px}
@@ -353,18 +352,23 @@
         }
         render(repos, 'all');
 
-        function render(items, lang){
+        async function render(items, lang){
           grid.innerHTML='';
-          items.filter(r=> lang==='all' || r.language===lang).forEach(r=>{
+          const filtered = items.filter(r=> lang==='all' || r.language===lang);
+          
+          for(const r of filtered) {
             const desc = r.description ? r.description : 'Описание не добавлено';
             const url = r.homepage && r.homepage.startsWith('http') ? r.homepage : r.html_url;
             const badge = r.homepage && r.homepage.startsWith('http') ? '<span class="pill">🌐 Демо</span>' : '';
+            
             // GitHub Social Preview (OpenGraph image)
             const socialPreview = `https://opengraph.githubassets.com/1/${r.owner.login}/${r.name}`;
-            const bgStyle = `background: linear-gradient(120deg, rgba(168,85,247,.3), rgba(59,183,255,.25)), url('${socialPreview}') center/cover no-repeat`;
+            
+            // Создаем карточку с градиентом по умолчанию
+            const cardId = `card-${r.id}`;
             grid.insertAdjacentHTML('beforeend', `
               <a class="card" href="${url}" target="_blank" rel="noreferrer">
-                <div class="thumb" style="${bgStyle}"></div>
+                <div class="thumb" id="${cardId}" style="background: linear-gradient(120deg, rgba(168,85,247,.4), rgba(59,183,255,.35))"></div>
                 <div class="content">
                   <div><span class="pill">${r.language || 'Misc'}</span><span class="pill">★ ${r.stargazers_count}</span>${badge}</div>
                   <h3>${r.name}</h3>
@@ -372,7 +376,17 @@
                 </div>
               </a>
             `);
-          });
+            
+            // Пытаемся загрузить изображение
+            const img = new Image();
+            img.onload = () => {
+              const thumb = document.getElementById(cardId);
+              if(thumb) {
+                thumb.style.background = `linear-gradient(120deg, rgba(168,85,247,.3), rgba(59,183,255,.25)), url('${socialPreview}') center/cover no-repeat`;
+              }
+            };
+            img.src = socialPreview;
+          }
         }
       }catch(e){ grid.innerHTML=''; empty.style.display='block'; console.error(e); }
     }
