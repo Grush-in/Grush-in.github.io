@@ -489,8 +489,8 @@
       /* Hero section - mobile version */
       .hero-main{ display:flex; flex-direction:column }
       .hero-header{ order: 1; margin-bottom:8px }
-      .avatar{ order: 2; height:auto; min-height:unset; position:relative; width:100%; margin:0 0 32px 0; padding:0 }
-      .avatar img{ width:100%; height:auto; max-width:100%; object-fit:cover; border-radius:16px }
+      .avatar{ order: 2; height:auto; min-height:unset !important; position:relative; width:100%; margin:0 0 32px 0; padding:0 !important; display:block !important }
+      .avatar img{ width:100%; height:auto; max-width:100%; object-fit:cover; border-radius:16px; display:block; animation:none !important }
       .hero-content{ order: 3; display:flex; flex-direction:column }
       
       /* Scroll animations visible by default on mobile */
@@ -545,8 +545,8 @@
       .hero{ margin-top:16px; gap:20px }
       .hero-main{ display:flex; flex-direction:column }
       .hero-header{ order: 1; margin-bottom:6px }
-      .avatar{ order: 2; height:auto; min-height:unset; position:relative; width:100%; margin:0 0 28px 0; padding:0 }
-      .avatar img{ width:100%; height:auto; max-width:100%; object-fit:cover; border-radius:14px }
+      .avatar{ order: 2; height:auto; min-height:unset !important; position:relative; width:100%; margin:0 0 28px 0; padding:0 !important; display:block !important }
+      .avatar img{ width:100%; height:auto; max-width:100%; object-fit:cover; border-radius:14px; display:block; animation:none !important }
       .hero-content{ order: 3; display:flex; flex-direction:column }
       
       /* Scroll animations visible by default on mobile */
@@ -601,8 +601,8 @@
       .hero{ gap:16px; margin-top:12px }
       .hero-main{ display:flex; flex-direction:column }
       .hero-header{ order: 1; padding:0; margin-bottom:4px }
-      .avatar{ order: 2; height:auto; min-height:unset; position:relative; width:100%; margin:0 0 24px 0; padding:0 }
-      .avatar img{ width:100%; height:auto; max-width:100%; object-fit:cover; border-radius:12px }
+      .avatar{ order: 2; height:auto; min-height:unset !important; position:relative; width:100%; margin:0 0 24px 0; padding:0 !important; display:block !important }
+      .avatar img{ width:100%; height:auto; max-width:100%; object-fit:cover; border-radius:12px; display:block; animation:none !important }
       .hero-content{ order: 3; display:flex; flex-direction:column }
       
       /* Scroll animations visible by default on mobile */
@@ -670,8 +670,8 @@
       .hero{ gap:12px }
       .hero-main{ display:flex; flex-direction:column }
       .hero-header{ order: 1; margin-bottom:4px }
-      .avatar{ order: 2; height:auto; min-height:unset; position:relative; width:100%; margin:0 0 20px 0; padding:0 }
-      .avatar img{ width:100%; height:auto; max-width:100%; object-fit:cover; border-radius:10px }
+      .avatar{ order: 2; height:auto; min-height:unset !important; position:relative; width:100%; margin:0 0 20px 0; padding:0 !important; display:block !important }
+      .avatar img{ width:100%; height:auto; max-width:100%; object-fit:cover; border-radius:10px; display:block; animation:none !important }
       .hero-content{ order: 3; display:flex; flex-direction:column }
       
       /* Scroll animations visible by default on mobile */
@@ -817,6 +817,10 @@
                 <span class="skill-label">Инженерия</span>
                 <span class="skill-value">CAD-системы (Компас-3D · Fusion 360)</span>
               </div>
+              <div class="skill-row">
+                <span class="skill-label">Тестирование</span>
+                <span class="skill-value">Теория тестирования</span>
+              </div>
             </div>
           </div>
 
@@ -885,6 +889,7 @@
               <span class="soft-badge">PostgreSQL</span>
               <span class="soft-badge">FastAPI</span>
               <span class="soft-badge">OpenCV</span>
+              <span class="soft-badge">Postman</span>
               <span class="soft-badge">Fusion 360</span>
               <span class="soft-badge">Компас-3D</span>
             </div>
