@@ -1,0 +1,27 @@
+{
+  "name": "vpn-stats-api",
+  "version": "1.0.0",
+  "description": "API endpoint для приема статистики от VPN бота",
+  "main": "api/stats.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.2"
+  },
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  },
+  "keywords": [
+    "vpn",
+    "stats",
+    "api",
+    "vercel"
+  ],
+  "author": "Grush-in",
+  "license": "MIT"
+}
+
+

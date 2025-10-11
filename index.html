@@ -917,21 +917,37 @@
           </div>
           <div class="service-title-wrap">
             <h3 class="service-title">VPN Service</h3>
-            <span class="service-status">Online</span>
+            <span class="service-status" id="vpn-status">
+              <span id="vpn-status-text">Загрузка...</span>
+            </span>
           </div>
         </div>
         <div class="service-content">
-      <div class="grid-2">
-        <div class="stat">
-              <h4>Активные пользователи</h4>
-              <div style="font-size:28px; font-weight:700; margin:8px 0; color:var(--ok)">128</div>
-          <div class="meter"><span style="width:62%"></span></div>
-        </div>
-        <div class="stat">
-              <h4>Состояние API</h4>
+          <div class="grid-2">
+            <div class="stat">
+              <h4>👥 Пользователи онлайн</h4>
+              <div style="font-size:28px; font-weight:700; margin:8px 0; color:var(--ok)" id="vpn-online-users">-</div>
+              <div class="meter"><span style="width:0%" id="vpn-online-meter"></span></div>
+              <p style="margin-top:8px; font-size:14px; color:var(--muted)">Всего пользователей: <span id="vpn-total-users">-</span></p>
+            </div>
+            <div class="stat">
+              <h4>🔑 Активные подписки</h4>
+              <div style="font-size:28px; font-weight:700; margin:8px 0; color:var(--primary)" id="vpn-active-keys">-</div>
+              <div class="meter"><span style="width:0%" id="vpn-keys-meter"></span></div>
+              <p style="margin-top:8px; font-size:14px; color:var(--muted)">Новых сегодня: <span id="vpn-new-users">-</span></p>
+            </div>
+            <div class="stat">
+              <h4>💰 Выручка сегодня</h4>
+              <div style="font-size:28px; font-weight:700; margin:8px 0; color:var(--primary-2)" id="vpn-revenue">-</div>
+              <div class="meter"><span style="width:0%" id="vpn-revenue-meter"></span></div>
+              <p style="margin-top:8px; font-size:14px; color:var(--muted)">Транзакций: <span id="vpn-transactions">-</span></p>
+            </div>
+            <div class="stat">
+              <h4>📊 Состояние системы</h4>
               <p style="margin:6px 0"><span style="color:var(--ok)">●</span> VPN Gateway — OK</p>
               <p style="margin:6px 0"><span style="color:var(--ok)">●</span> Auth Server — OK</p>
               <p style="margin:6px 0"><span style="color:var(--ok)">●</span> Database — OK</p>
+              <p style="margin-top:12px; font-size:12px; color:var(--muted)">Обновлено: <span id="vpn-last-update">никогда</span></p>
             </div>
           </div>
         </div>
@@ -1386,6 +1402,92 @@
     
     // Start animation
     requestAnimationFrame(animatePulses);
+
+    /* ---------- VPN Stats Integration ---------- */
+    async function loadVPNStats() {
+      try {
+        const response = await fetch('stats.json?t=' + Date.now());
+        const stats = await response.json();
+        
+        // Обновляем статус
+        const statusEl = document.getElementById('vpn-status-text');
+        if (stats.online_users > 0 || stats.total_users > 0) {
+          statusEl.textContent = 'Online';
+          statusEl.parentElement.style.color = 'var(--ok)';
+        } else {
+          statusEl.textContent = 'Нет данных';
+          statusEl.parentElement.style.color = 'var(--muted)';
+        }
+        
+        // Обновляем пользователей онлайн
+        document.getElementById('vpn-online-users').textContent = stats.online_users || 0;
+        document.getElementById('vpn-total-users').textContent = stats.total_users || 0;
+        
+        // Обновляем метр онлайн пользователей (процент от общего)
+        const onlinePercent = stats.total_users > 0 
+          ? Math.min((stats.online_users / stats.total_users) * 100, 100)
+          : 0;
+        document.getElementById('vpn-online-meter').style.width = onlinePercent + '%';
+        
+        // Обновляем активные ключи
+        document.getElementById('vpn-active-keys').textContent = stats.active_keys || 0;
+        document.getElementById('vpn-new-users').textContent = stats.new_users_today || 0;
+        
+        // Обновляем метр ключей (процент от пользователей)
+        const keysPercent = stats.total_users > 0 
+          ? Math.min((stats.active_keys / stats.total_users) * 100, 100)
+          : 0;
+        document.getElementById('vpn-keys-meter').style.width = keysPercent + '%';
+        
+        // Обновляем выручку
+        const revenue = stats.revenue_today || 0;
+        document.getElementById('vpn-revenue').textContent = '₽' + revenue.toFixed(0);
+        document.getElementById('vpn-transactions').textContent = stats.transactions_today || 0;
+        
+        // Обновляем метр выручки (относительно целевой суммы, например 10000₽)
+        const TARGET_REVENUE = 10000;
+        const revenuePercent = Math.min((revenue / TARGET_REVENUE) * 100, 100);
+        document.getElementById('vpn-revenue-meter').style.width = revenuePercent + '%';
+        
+        // Обновляем время последнего обновления
+        const timestamp = new Date(stats.timestamp || Date.now());
+        const now = new Date();
+        const diffMinutes = Math.floor((now - timestamp) / 60000);
+        
+        let timeText;
+        if (diffMinutes < 1) {
+          timeText = 'только что';
+        } else if (diffMinutes < 60) {
+          timeText = diffMinutes + ' мин назад';
+        } else {
+          const diffHours = Math.floor(diffMinutes / 60);
+          timeText = diffHours + ' ч назад';
+        }
+        
+        document.getElementById('vpn-last-update').textContent = timeText;
+        
+        console.log('✅ VPN статистика загружена:', stats);
+        
+      } catch (error) {
+        console.error('❌ Ошибка загрузки VPN статистики:', error);
+        document.getElementById('vpn-status-text').textContent = 'Offline';
+        document.getElementById('vpn-status-text').parentElement.style.color = 'var(--danger)';
+      }
+    }
+
+    // Загружаем статистику при старте
+    loadVPNStats();
+
+    // Автообновление каждые 30 секунд
+    setInterval(loadVPNStats, 30000);
+
+    // Обновляем при переключении на вкладку Services
+    const servicesTab = document.querySelector('[data-tab="services"]');
+    if (servicesTab) {
+      servicesTab.addEventListener('click', () => {
+        setTimeout(loadVPNStats, 100);
+      });
+    }
   </script>
 </body>
 </html>

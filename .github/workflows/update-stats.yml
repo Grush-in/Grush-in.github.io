@@ -1,0 +1,84 @@
+name: Update VPN Stats
+
+on:
+  # Срабатывает когда бот отправляет событие
+  repository_dispatch:
+    types: [update-stats]
+  
+  # Для ручного запуска (для тестирования)
+  workflow_dispatch:
+    inputs:
+      test_data:
+        description: 'Test stats data (JSON)'
+        required: false
+        default: '{}'
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update stats.json
+        run: |
+          # Получаем данные из события или тестовых данных
+          if [ -n "${{ github.event.client_payload.stats }}" ]; then
+            echo '${{ toJSON(github.event.client_payload.stats) }}' > stats.json
+            echo "✅ Статистика обновлена из repository_dispatch"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo '${{ github.event.inputs.test_data }}' > stats.json
+            echo "✅ Тестовые данные добавлены"
+          else
+            echo "❌ Нет данных для обновления"
+            exit 0
+          fi
+          
+          # Проверяем что JSON валидный
+          if ! python3 -m json.tool stats.json > /dev/null 2>&1; then
+            echo "❌ Невалидный JSON!"
+            exit 1
+          fi
+          
+          echo "📊 Содержимое stats.json:"
+          cat stats.json
+      
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Добавляем изменения
+          git add stats.json
+          
+          # Проверяем есть ли изменения
+          if git diff --staged --quiet; then
+            echo "ℹ️  Нет изменений для коммита"
+            exit 0
+          fi
+          
+          # Коммитим и пушим
+          git commit -m "📊 Update VPN stats [skip ci]
+
+          Updated by: ${{ github.event_name }}
+          Timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          
+          git push
+          
+          echo "✅ Изменения отправлены в репозиторий"
+      
+      - name: Summary
+        run: |
+          echo "## 📊 Stats Update Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ File updated successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Updated stats:**" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          cat stats.json >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+

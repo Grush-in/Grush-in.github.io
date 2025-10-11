@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/stats.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/stats",
+      "dest": "api/stats.js"
+    }
+  ],
+  "env": {
+    "GITHUB_TOKEN": "@github-token",
+    "STATS_API_KEY": "@stats-api-key"
+  }
+}
+
+
