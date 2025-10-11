@@ -305,6 +305,33 @@
 
     /* ---------- Sections ---------- */
     section{margin-top:28px}
+    .section-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px}
+    .refresh-btn{
+      background:linear-gradient(135deg, var(--primary), var(--primary-2));
+      color:white; border:none; padding:10px 20px; border-radius:12px; cursor:pointer;
+      font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px;
+      transition:all .3s ease; box-shadow:0 4px 12px rgba(168,85,247,.3);
+      font-family:'Cornerita', sans-serif;
+    }
+    .refresh-btn:hover{transform:translateY(-2px); box-shadow:0 6px 18px rgba(168,85,247,.5)}
+    .refresh-btn:active{transform:translateY(0); box-shadow:0 2px 8px rgba(168,85,247,.3)}
+    .refresh-btn.loading{opacity:0.7; cursor:wait}
+    .refresh-btn.loading .refresh-icon{animation:spin 1s linear infinite}
+    @keyframes spin{from{transform:rotate(0deg)} to{transform:rotate(360deg)}}
+    .stats-indicator{
+      display:inline-block; width:8px; height:8px; border-radius:50%; 
+      background:var(--ok); margin-left:10px; position:relative;
+    }
+    .stats-indicator.checking{animation:pulse-dot 2s ease infinite}
+    .stats-indicator.updated{background:var(--primary); animation:flash 0.5s ease}
+    @keyframes pulse-dot{
+      0%, 100%{opacity:1; transform:scale(1)}
+      50%{opacity:0.5; transform:scale(1.3)}
+    }
+    @keyframes flash{
+      0%, 100%{opacity:1}
+      50%{opacity:0.3; transform:scale(1.5)}
+    }
     .cards{ display:grid; grid-template-columns: repeat(3, 1fr); gap:18px }
     .card{ background:rgba(28,32,43,0.6); backdrop-filter:blur(10px) saturate(1.2); border:1px solid rgba(255,255,255,.08); border-radius:16px; overflow:hidden; position:relative; cursor:pointer; text-decoration:none; display:block; color:var(--text); transition:all .3s ease}
     .card:hover{ box-shadow:0 14px 36px rgba(168,85,247,.12); transform:translateY(-4px); border-color:rgba(168,85,247,.3) }
@@ -479,6 +506,10 @@
       body{ font-size:15px }
       .container{ padding:20px }
       
+      /* Кнопка обновления */
+      .section-header{ flex-direction:column; align-items:flex-start; gap:12px }
+      .refresh-btn{ width:100%; justify-content:center }
+      
       /* Header */
       .logo{ font-size:22px }
       .logo-mark{ width:22px; height:22px; margin-right:8px }
@@ -533,6 +564,11 @@
     /* Mobile landscape and small tablets (768px and below) */
     @media (max-width: 768px){
       .container{ padding:16px }
+      
+      /* Кнопка обновления - компактная */
+      .refresh-btn{ padding:8px 16px; font-size:13px }
+      .refresh-btn span:last-child{ display:none }
+      .refresh-btn .refresh-icon{ font-size:18px; margin:0 }
       
       /* Header - make it more compact */
       header{ padding:3px 8px !important }
@@ -907,7 +943,16 @@
 
     <!-- Services Dashboard -->
     <section id="services" style="display:none">
-      <h2>Рабочие сервисы</h2>
+      <div class="section-header">
+        <h2 style="margin:0">
+          Рабочие сервисы
+          <span class="stats-indicator" id="statsIndicator" title="Автообновление активно"></span>
+        </h2>
+        <button class="refresh-btn" id="refreshStatsBtn" onclick="manualRefreshStats()">
+          <span class="refresh-icon">🔄</span>
+          <span>Обновить статистику</span>
+        </button>
+      </div>
       
       <!-- VPN Service -->
       <div class="service-item" onclick="toggleService(this)">
@@ -1404,10 +1449,36 @@
     requestAnimationFrame(animatePulses);
 
     /* ---------- VPN Stats Integration ---------- */
-    async function loadVPNStats() {
+    let lastStatsTimestamp = null;
+    let statsCheckInterval = null;
+    
+    async function loadVPNStats(showNotification = false, isAutoCheck = false) {
+      const indicator = document.getElementById('statsIndicator');
+      
       try {
+        // Показываем индикатор проверки
+        if (isAutoCheck && indicator) {
+          indicator.classList.add('checking');
+        }
+        
         const response = await fetch('stats.json?t=' + Date.now());
         const stats = await response.json();
+        
+        // Проверяем изменились ли данные
+        const newTimestamp = stats.timestamp;
+        const hasChanged = lastStatsTimestamp && newTimestamp !== lastStatsTimestamp;
+        
+        if (hasChanged && isAutoCheck) {
+          // Данные обновились автоматически!
+          showNotification = true;
+          if (indicator) {
+            indicator.classList.remove('checking');
+            indicator.classList.add('updated');
+            setTimeout(() => indicator.classList.remove('updated'), 500);
+          }
+        }
+        
+        lastStatsTimestamp = newTimestamp;
         
         // Обновляем статус
         const statusEl = document.getElementById('vpn-status-text');
@@ -1468,26 +1539,152 @@
         
         console.log('✅ VPN статистика загружена:', stats);
         
+        // Показываем уведомление если запрошено
+        if (showNotification) {
+          const message = hasChanged && isAutoCheck 
+            ? '📊 Статистика обновлена автоматически!' 
+            : '✓ Статистика обновлена!';
+          showUpdateNotification(message, 'success');
+        }
+        
       } catch (error) {
         console.error('❌ Ошибка загрузки VPN статистики:', error);
         document.getElementById('vpn-status-text').textContent = 'Offline';
         document.getElementById('vpn-status-text').parentElement.style.color = 'var(--danger)';
+        
+        if (showNotification && !isAutoCheck) {
+          showUpdateNotification('Ошибка загрузки статистики', 'error');
+        }
+      } finally {
+        // Убираем индикатор проверки
+        if (isAutoCheck && indicator) {
+          indicator.classList.remove('checking');
+        }
       }
     }
 
-    // Загружаем статистику при старте
-    loadVPNStats();
+    // Ручное обновление статистики
+    async function manualRefreshStats() {
+      const btn = document.getElementById('refreshStatsBtn');
+      const icon = btn.querySelector('.refresh-icon');
+      
+      // Блокируем кнопку
+      btn.classList.add('loading');
+      btn.disabled = true;
+      
+      try {
+        await loadVPNStats(true);
+      } finally {
+        // Разблокируем кнопку через 1 секунду
+        setTimeout(() => {
+          btn.classList.remove('loading');
+          btn.disabled = false;
+        }, 1000);
+      }
+    }
 
-    // Автообновление каждые 30 секунд
-    setInterval(loadVPNStats, 30000);
+    // Уведомления
+    function showUpdateNotification(message, type = 'success') {
+      // Создаем элемент уведомления
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: ${type === 'success' ? 'linear-gradient(135deg, var(--ok), #22c55e)' : 'linear-gradient(135deg, var(--danger), #ef4444)'};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        z-index: 1000;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease;
+        font-family: 'Cornerita', sans-serif;
+      `;
+      
+      notification.innerHTML = `
+        <span style="font-size:20px">${type === 'success' ? '✓' : '✕'}</span>
+        <span>${message}</span>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Удаляем через 3 секунды
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+
+    // Добавляем стили для анимации уведомлений
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(400px); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Запуск автоматической проверки обновлений
+    function startStatsAutoUpdate() {
+      // Первая загрузка
+      loadVPNStats(false, false);
+      
+      // Проверяем обновления каждые 10 секунд
+      if (statsCheckInterval) {
+        clearInterval(statsCheckInterval);
+      }
+      
+      statsCheckInterval = setInterval(() => {
+        loadVPNStats(false, true); // isAutoCheck = true
+      }, 10000); // 10 секунд
+      
+      console.log('🔄 Автообновление статистики запущено (каждые 10 секунд)');
+    }
+
+    // Остановка автообновления
+    function stopStatsAutoUpdate() {
+      if (statsCheckInterval) {
+        clearInterval(statsCheckInterval);
+        statsCheckInterval = null;
+        console.log('⏸️  Автообновление статистики остановлено');
+      }
+    }
+
+    // Запускаем автообновление при старте
+    startStatsAutoUpdate();
 
     // Обновляем при переключении на вкладку Services
     const servicesTab = document.querySelector('[data-tab="services"]');
     if (servicesTab) {
       servicesTab.addEventListener('click', () => {
-        setTimeout(loadVPNStats, 100);
+        setTimeout(() => loadVPNStats(false, false), 100);
       });
     }
+
+    // Приостанавливаем проверку когда вкладка неактивна (экономим ресурсы)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        // Вкладка скрыта - замедляем проверку
+        if (statsCheckInterval) {
+          clearInterval(statsCheckInterval);
+          statsCheckInterval = setInterval(() => {
+            loadVPNStats(false, true);
+          }, 60000); // 1 минута когда вкладка неактивна
+        }
+      } else {
+        // Вкладка активна - возобновляем частую проверку
+        startStatsAutoUpdate();
+      }
+    });
   </script>
 </body>
 </html>
