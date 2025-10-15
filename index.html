@@ -988,10 +988,10 @@
               <p style="margin-top:8px; font-size:14px; color:var(--muted)">Транзакций: <span id="vpn-transactions">-</span></p>
             </div>
             <div class="stat">
-              <h4>📊 Состояние системы</h4>
-              <p style="margin:6px 0"><span style="color:var(--ok)">●</span> VPN Gateway — OK</p>
-              <p style="margin:6px 0"><span style="color:var(--ok)">●</span> Auth Server — OK</p>
-              <p style="margin:6px 0"><span style="color:var(--ok)">●</span> Database — OK</p>
+              <h4>📊 Состояние серверов</h4>
+              <div id="vpn-servers-status" style="margin-top:8px">
+                <p style="margin:6px 0"><span style="color:var(--muted)">●</span> Загрузка...</p>
+              </div>
               <p style="margin-top:12px; font-size:12px; color:var(--muted)">Обновлено: <span id="vpn-last-update">никогда</span></p>
             </div>
           </div>
@@ -1452,6 +1452,36 @@
     let lastStatsTimestamp = null;
     let statsCheckInterval = null;
     
+    // ============================================================================
+    // API Configuration
+    // ============================================================================
+    const API_CONFIG = {
+      url: 'http://grushkin.ddns.net:25565',
+      token: 'e1fleciEiLbK_etcBZTGGvV1aSXq_XL6ntxVbmYjCzs',
+      useAPI: true  // true = использовать API сервер, false = использовать stats.json
+    };
+    
+    // API запрос
+    async function apiRequest(endpoint) {
+      try {
+        const response = await fetch(`${API_CONFIG.url}${endpoint}`, {
+          headers: {
+            'Authorization': `Bearer ${API_CONFIG.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('❌ Ошибка API:', error);
+        throw error;
+      }
+    }
+    
     async function loadVPNStats(showNotification = false, isAutoCheck = false) {
       const indicator = document.getElementById('statsIndicator');
       
@@ -1461,8 +1491,30 @@
           indicator.classList.add('checking');
         }
         
-        const response = await fetch('stats.json?t=' + Date.now());
-        const stats = await response.json();
+        let stats;
+        
+        // Используем API сервер или stats.json
+        if (API_CONFIG.useAPI) {
+          // Загружаем с API сервера
+          const apiData = await apiRequest('/stats');
+          
+          // Преобразуем формат API в наш формат
+          stats = {
+            app_name: 'RunaVPN Bot',
+            timestamp: new Date().toISOString(),
+            online_users: apiData.online_users || 0,
+            total_users: apiData.total_users || 0,
+            active_keys: apiData.active_subscriptions || 0,
+            transactions_today: apiData.today_transactions || 0,
+            revenue_today: apiData.today_revenue || 0,
+            new_users_today: apiData.today_new_users || 0,
+            uptime_seconds: 0
+          };
+        } else {
+          // Загружаем из stats.json (как раньше)
+          const response = await fetch('stats.json?t=' + Date.now());
+          stats = await response.json();
+        }
         
         // Проверяем изменились ли данные
         const newTimestamp = stats.timestamp;
@@ -1537,6 +1589,16 @@
         
         document.getElementById('vpn-last-update').textContent = timeText;
         
+        // Загружаем статус серверов (если используем API)
+        if (API_CONFIG.useAPI) {
+          try {
+            const serversData = await apiRequest('/servers/status');
+            updateServersStatus(serversData);
+          } catch (error) {
+            console.error('❌ Ошибка загрузки серверов:', error);
+          }
+        }
+        
         console.log('✅ VPN статистика загружена:', stats);
         
         // Показываем уведомление если запрошено
@@ -1580,6 +1642,46 @@
           btn.classList.remove('loading');
           btn.disabled = false;
         }, 1000);
+      }
+    }
+
+    // Обновление статуса серверов
+    function updateServersStatus(serversData) {
+      const container = document.getElementById('vpn-servers-status');
+      
+      if (!serversData || !serversData.servers || serversData.servers.length === 0) {
+        container.innerHTML = '<p style="margin:6px 0"><span style="color:var(--muted)">●</span> Нет данных</p>';
+        return;
+      }
+      
+      container.innerHTML = '';
+      
+      // Показываем максимум 3 сервера
+      const serversToShow = serversData.servers.slice(0, 3);
+      
+      serversToShow.forEach(server => {
+        const status = server.online ? 'var(--ok)' : 'var(--danger)';
+        const statusText = server.online ? 'OK' : 'Offline';
+        const serverName = server.country_name || server.name || 'Server';
+        
+        const serverHTML = `
+          <p style="margin:6px 0">
+            <span style="color:${status}">●</span> ${serverName} — ${statusText}
+          </p>
+        `;
+        
+        container.innerHTML += serverHTML;
+      });
+      
+      // Если серверов больше 3, показываем счетчик
+      if (serversData.servers.length > 3) {
+        const onlineCount = serversData.servers.filter(s => s.online).length;
+        const totalCount = serversData.servers.length;
+        container.innerHTML += `
+          <p style="margin:8px 0 0 0; font-size:11px; color:var(--muted)">
+            Всего серверов: ${totalCount} (онлайн: ${onlineCount})
+          </p>
+        `;
       }
     }
 

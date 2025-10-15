@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RunaVPN - Статистика</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .card-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .card-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .servers-list {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .server-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .server-item:last-child {
+            border-bottom: none;
+        }
+
+        .server-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .server-status.online {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .server-status.offline {
+            background: #ef4444;
+            box-shadow: 0 0 10px #ef4444;
+        }
+
+        .server-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .server-url {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 50px;
+        }
+
+        .error {
+            background: #ef4444;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .refresh-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .timestamp {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 RunaVPN Dashboard</h1>
+            <p>Статистика в реальном времени</p>
+        </div>
+
+        <div id="error-container"></div>
+        <div id="loading" class="loading">Загрузка данных...</div>
+        <div id="dashboard" style="display: none;">
+            <div class="dashboard">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">👥</div>
+                        <div class="card-title">Онлайн</div>
+                    </div>
+                    <div class="card-value" id="online-users">-</div>
+                    <div class="card-label">пользователей онлайн</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">👤</div>
+                        <div class="card-title">Всего пользователей</div>
+                    </div>
+                    <div class="card-value" id="total-users">-</div>
+                    <div class="card-label">зарегистрировано</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔑</div>
+                        <div class="card-title">Активные подписки</div>
+                    </div>
+                    <div class="card-value" id="active-subs">-</div>
+                    <div class="card-label">активных подписок</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">💰</div>
+                        <div class="card-title">Выручка за сегодня</div>
+                    </div>
+                    <div class="card-value" id="today-revenue">-</div>
+                    <div class="card-label">рублей</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📝</div>
+                        <div class="card-title">Транзакции</div>
+                    </div>
+                    <div class="card-value" id="today-transactions">-</div>
+                    <div class="card-label">за сегодня</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🆕</div>
+                        <div class="card-title">Новые пользователи</div>
+                    </div>
+                    <div class="card-value" id="new-users">-</div>
+                    <div class="card-label">за сегодня</div>
+                </div>
+            </div>
+
+            <div class="servers-list">
+                <h2 style="margin-bottom: 20px;">🖥 Статус серверов</h2>
+                <div id="servers-container"></div>
+            </div>
+
+            <button class="refresh-btn" onclick="loadData()">🔄 Обновить</button>
+            <div class="timestamp" id="timestamp"></div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // НАСТРОЙКИ - ИЗМЕНИТЕ ЭТИ ЗНАЧЕНИЯ
+        // ============================================================================
+        
+        const API_URL = 'http://grushkin.ddns.net:25565';  // URL вашего API
+        const API_TOKEN = 'e1fleciEiLbK_etcBZTGGvV1aSXq_XL6ntxVbmYjCzs';  // Токен API
+        
+        // Автообновление каждые 30 секунд
+        const AUTO_REFRESH_INTERVAL = 30000;
+
+        // ============================================================================
+        // ФУНКЦИИ
+        // ============================================================================
+
+        async function apiRequest(endpoint) {
+            try {
+                const response = await fetch(`${API_URL}${endpoint}`, {
+                    headers: {
+                        'Authorization': `Bearer ${API_TOKEN}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка API:', error);
+                showError(`Ошибка подключения к API: ${error.message}`);
+                throw error;
+            }
+        }
+
+        function showError(message) {
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.innerHTML = `<div class="error">❌ ${message}</div>`;
+        }
+
+        function hideError() {
+            document.getElementById('error-container').innerHTML = '';
+        }
+
+        async function loadStats() {
+            const data = await apiRequest('/stats');
+            
+            document.getElementById('online-users').textContent = data.online_users;
+            document.getElementById('total-users').textContent = data.total_users;
+            document.getElementById('active-subs').textContent = data.active_subscriptions;
+            document.getElementById('today-revenue').textContent = data.today_revenue.toFixed(2) + '₽';
+            document.getElementById('today-transactions').textContent = data.today_transactions;
+            document.getElementById('new-users').textContent = data.today_new_users;
+        }
+
+        async function loadServers() {
+            const data = await apiRequest('/servers/status');
+            const container = document.getElementById('servers-container');
+            
+            container.innerHTML = '';
+            
+            data.servers.forEach(server => {
+                const serverItem = document.createElement('div');
+                serverItem.className = 'server-item';
+                
+                const statusClass = server.online ? 'online' : 'offline';
+                
+                serverItem.innerHTML = `
+                    <div class="server-status ${statusClass}"></div>
+                    <div class="server-name">${server.country_name}</div>
+                    <div class="server-url">${server.url}</div>
+                `;
+                
+                container.appendChild(serverItem);
+            });
+        }
+
+        async function loadData() {
+            try {
+                hideError();
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('dashboard').style.display = 'none';
+
+                await Promise.all([loadStats(), loadServers()]);
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+
+                // Обновляем время
+                const now = new Date();
+                document.getElementById('timestamp').textContent = 
+                    `Обновлено: ${now.toLocaleString('ru-RU')}`;
+
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Загрузка при старте
+        loadData();
+
+        // Автообновление
+        setInterval(loadData, AUTO_REFRESH_INTERVAL);
+    </script>
+</body>
+</html>
+
+
+
+
