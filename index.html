@@ -559,6 +559,9 @@
       
       /* Roadmap */
       .grid-2{ grid-template-columns: 1fr }
+      
+      /* VPN Service stats grid */
+      .service-content > div[style*="grid-template-columns:repeat(3"] { grid-template-columns: 1fr !important }
     }
     
     /* Mobile landscape and small tablets (768px and below) */
@@ -968,7 +971,7 @@
           </div>
         </div>
         <div class="service-content">
-          <div class="grid-2">
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:18px">
             <div class="stat">
               <h4>👥 Пользователи онлайн</h4>
               <div style="font-size:28px; font-weight:700; margin:8px 0; color:var(--ok)" id="vpn-online-users">-</div>
@@ -980,12 +983,6 @@
               <div style="font-size:28px; font-weight:700; margin:8px 0; color:var(--primary)" id="vpn-active-keys">-</div>
               <div class="meter"><span style="width:0%" id="vpn-keys-meter"></span></div>
               <p style="margin-top:8px; font-size:14px; color:var(--muted)">Новых сегодня: <span id="vpn-new-users">-</span></p>
-            </div>
-            <div class="stat">
-              <h4>💰 Выручка сегодня</h4>
-              <div style="font-size:28px; font-weight:700; margin:8px 0; color:var(--primary-2)" id="vpn-revenue">-</div>
-              <div class="meter"><span style="width:0%" id="vpn-revenue-meter"></span></div>
-              <p style="margin-top:8px; font-size:14px; color:var(--muted)">Транзакций: <span id="vpn-transactions">-</span></p>
             </div>
             <div class="stat">
               <h4>📊 Состояние серверов</h4>
@@ -1495,18 +1492,27 @@
         
         // Используем API сервер или stats.json
         if (API_CONFIG.useAPI) {
-          // Загружаем с API сервера
+          // Загружаем основную статистику с API сервера
           const apiData = await apiRequest('/stats');
+          
+          // Загружаем онлайн пользователей отдельно
+          let onlineUsers = 0;
+          try {
+            const onlineData = await apiRequest('/stats/online');
+            onlineUsers = onlineData.online_users || onlineData.count || 0;
+          } catch (error) {
+            console.warn('⚠️ Не удалось загрузить онлайн пользователей:', error);
+          }
           
           // Преобразуем формат API в наш формат
           stats = {
             app_name: 'RunaVPN Bot',
             timestamp: new Date().toISOString(),
-            online_users: apiData.online_users || 0,
+            online_users: onlineUsers,
             total_users: apiData.total_users || 0,
             active_keys: apiData.active_subscriptions || 0,
             transactions_today: apiData.today_transactions || 0,
-            revenue_today: apiData.today_revenue || 0,
+            revenue_today: 0,
             new_users_today: apiData.today_new_users || 0,
             uptime_seconds: 0
           };
@@ -1561,16 +1567,6 @@
           ? Math.min((stats.active_keys / stats.total_users) * 100, 100)
           : 0;
         document.getElementById('vpn-keys-meter').style.width = keysPercent + '%';
-        
-        // Обновляем выручку
-        const revenue = stats.revenue_today || 0;
-        document.getElementById('vpn-revenue').textContent = '₽' + revenue.toFixed(0);
-        document.getElementById('vpn-transactions').textContent = stats.transactions_today || 0;
-        
-        // Обновляем метр выручки (относительно целевой суммы, например 10000₽)
-        const TARGET_REVENUE = 10000;
-        const revenuePercent = Math.min((revenue / TARGET_REVENUE) * 100, 100);
-        document.getElementById('vpn-revenue-meter').style.width = revenuePercent + '%';
         
         // Обновляем время последнего обновления
         const timestamp = new Date(stats.timestamp || Date.now());
